@@ -9,6 +9,19 @@ Rassforge stands for **Rust Password Forge**.
 ## ⚡️ Fast and Efficient: ##
 Rassforge leverages the speed and performance of Rust to deliver quick results, ensuring that your wordlists are generated in a timely manner.
 
+# 🔨 Installation 🔨 #
+Currently available for Windows x64 and Linux x64 systems.
+
+To install it for Linux x64:
+```
+wget -O - https://github.com/vulfilip/rassforge/releases/download/v1.0.0/x86_64_linux_rassforge.tar.gz | tar -xz
+```
+To install it for Windows x64:
+```
+powershell -command "& {Invoke-WebRequest -Uri 'https://github.com/vulfilip/rassforge/releases/download/v1.0.0/x86_64_windows_rassforge.zip' -OutFile 'rassforge.zip'; Expand-Archive -Path 'rassforge.zip' -DestinationPath 'rassforge'}"
+```
+Or check out [releases](https://github.com/vulfilip/rassforge/releases/), download and unzip - you're done.
+
 # ℹ️  Introduction & Usage ℹ️  #
 Rassforge is split into multiple modes, each of them having their own specific flags.
 ```
@@ -45,8 +58,5 @@ In encode mode, Rassforge offers the ability to encode existing wordlists with v
 ![2023-05-22_21-12](https://github.com/vulfilip/rassforge/assets/131812836/d427cda4-cf37-4db1-b81f-dedc8eff0b2c)
 ![2023-05-22_21-17](https://github.com/vulfilip/rassforge/assets/131812836/ee8ec012-f053-4706-ba35-86def60a31b2)
 ![2023-05-22_21-21](https://github.com/vulfilip/rassforge/assets/131812836/2d234ee5-08bd-40bd-a776-893db21e5c6d)
-
-# 🔨 Installation 🔨 #
-To do...
 
 
