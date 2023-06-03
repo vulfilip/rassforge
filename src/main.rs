@@ -1,6 +1,7 @@
 #![allow(unused)]
 
 use core::panic;
+use std::mem::replace;
 use std::time::Instant;
 use std::fs;
 use std::fs::{File, OpenOptions};
@@ -51,8 +52,10 @@ fn main() {
                 .long_help("Specifies which special characters will be used while generating a bruteforce password list.").required(false)
                 .default_value("None")
             )
+            .arg(Arg::new("leet").long("leet").help("Enables leet speak. Replaces characters with their corresponding 1337 num63r5. Extends usually generated wordlist with leet speak results also. Doesn't convert seasons and months into leet speak.")
+                .required(false).action(ArgAction::SetTrue))
             .arg(Arg::new("reverse").short('r').long("reverse").action(ArgAction::SetTrue)
-            .help("Enables reverse mixing of keywords and years: YearKeywordSymbol and SymbolKeywordYear. Put symbols in between quotation marks: \"!@#\"").required(false))
+                .help("Enables reverse mixing of keywords and years: YearKeywordSymbol and SymbolKeywordYear. Put symbols in between quotation marks: \"!@#\"").required(false))
             )
         .arg(Arg::new("output").short('o').long("output").help("Specify a  file to write results in.").default_value("rassforge_passlist.txt").global(true))
         .arg(Arg::new("head").long("head").help("Specify a value which will ALWAYS be at the beggining of generated words").global(true).required(false))
@@ -109,7 +112,13 @@ fn main() {
             let years_range = subcommand_matches_standard.get_one::<String>("years").expect("Year range loading failed. Check the syntax");
             let mut years_list = Vec::new();
             years_parser(&years_range, &mut years_list);
-            let keywords = read_file(&path);
+            let mut keywords = read_file(&path);
+            let is_leet_enabled = subcommand_matches_standard.get_flag("leet");
+            if is_leet_enabled{
+                for word in &keywords.clone() {
+                    keywords.push(leet(word));
+                }
+            }
             let is_reverse_enabled = subcommand_matches_standard.get_flag("reverse");
 
             println!("Standard mode selected");
@@ -336,6 +345,9 @@ fn years_parser(year_input: &str, years: &mut Vec<String>) {
             panic!("Invalid year or range: {}", year_range);
         }
     }
+    for year in years.clone(){
+        years.push(year[year.len()-2..].to_string());
+    }
 }
 
 //END STANDARD MODE
@@ -345,7 +357,7 @@ fn crunch(characters: &[char], min_size: usize, max_size: usize) -> Vec<String> 
     let mut output: Vec<String> = Vec::new();
     let mut current_combination: Vec<char> = Vec::new();
     
-    fn combine(characters: &[char], min_size: usize, max_size: usize, result: &mut Vec<String>, current_combination: &mut Vec<char>, start_index: usize) {
+    fn combine(characters: &[char], min_size: usize, max_size: usize, result: &mut Vec<String>, current_combination: &mut Vec<char>) {
         if current_combination.len() >= min_size && current_combination.len() <= max_size {
             result.push(current_combination.iter().collect());
         }
@@ -354,14 +366,14 @@ fn crunch(characters: &[char], min_size: usize, max_size: usize) -> Vec<String> 
             return;
         }
         
-        for i in start_index..characters.len() {
+        for i in 0..characters.len() {
             current_combination.push(characters[i]);
-            combine(characters, min_size, max_size, result, current_combination, i + 1);
+            combine(characters, min_size, max_size, result, current_combination);
             current_combination.pop();
         }
     }
     
-    combine(characters, min_size, max_size, &mut output, &mut current_combination, 0);
+    combine(characters, min_size, max_size, &mut output, &mut current_combination);
     output
 }
 //END CRUNCH MODE
@@ -476,6 +488,18 @@ fn tail_add(tail: &str, material: Vec<String>) -> Vec<String>{
         new_output.push(format!("{}{}", value, tail));
     }
     new_output
+}
+fn leet(original: &str) -> String{
+    let leet_speak = original.to_lowercase().replace("a", "4")
+                                    .replace("g", "6")
+                                    .replace("e", "3")
+                                    .replace("l","1")
+                                    .replace("z", "2")
+                                    .replace("t", "7")
+                                    .replace("o", "0")
+                                    .replace("s", "5")
+                                    .replace("b", "8");
+    leet_speak
 }
 //END GLOBAL FUNCTIONS
 
